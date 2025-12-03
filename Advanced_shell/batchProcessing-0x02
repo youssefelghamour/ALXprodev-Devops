@@ -4,12 +4,30 @@
 mkdir -p pokemon_data
 
 # Bash array of Pokémon names
-pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon" "invalidname")
 
 # Loop over the array
 for name in "${pokemon_list[@]}"; do
-	echo "Fetching data for $name..."
-	curl -s "https://pokeapi.co/api/v2/pokemon/$name" > "pokemon_data/$name.json"
-	echo "Saved data to pokemon_data/$name.json ✅"
-	sleep 1  # Hanlde rate-limiting
+	retry_count=0
+	success=false
+
+	while [ $retry_count -lt 3 ] && [ "$success" = false ]; do
+		response=$(curl -s -f "https://pokeapi.co/api/v2/pokemon/$name")
+		if [ $? -eq 0 ]; then
+			echo "Fetching data for $name..."
+			echo "$response" > "pokemon_data/$name.json"
+			echo "Saved data to pokemon_data/$name.json ✅"
+			success=true
+		else
+			retry_count=$((retry_count+1))
+			sleep 1
+		fi
+	done
+
+	if [ "$success" = false ]; then
+		echo "$name failed after 3 attempts" >> errors.txt
+		continue
+	fi
+
+	sleep 1  # rate-limiting
 done
