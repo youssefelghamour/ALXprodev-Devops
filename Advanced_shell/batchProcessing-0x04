@@ -4,14 +4,24 @@
 mkdir -p new_pokemon_data
 
 pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+pids=()
 
 for name in "${pokemon_list[@]}"; do
 	echo "Fetching data for $name..."
-	# Run curl in the background
 	curl -s -f "https://pokeapi.co/api/v2/pokemon/$name" > "new_pokemon_data/$name.json" &
+	pid=$!
+	pids+=($pid)   # store background PID
+
+	# Enforce a timeout (5 seconds) for the background process
+	( sleep 5; kill -0 $pid 2>/dev/null && kill $pid && echo "$name timed out and was killed" ) &
 done
 
+# Show running jobs
+jobs
+
 # Wait for all background processes to finish
-wait
+for pid in "${pids[@]}"; do
+	wait $pid || echo "Process $pid failed"
+done
 
 echo "All downloads finished ✅"
