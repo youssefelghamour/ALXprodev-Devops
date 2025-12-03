@@ -3,7 +3,9 @@
 
 mkdir -p pokemon_data
 
-for name in Bulbasaur Ivysaur Venusaur Charmander Charmeleon; do
+pokemon_list=("Bulbasaur" "Ivysaur" "Venusaur" "Charmander" "Charmeleon")
+
+for name in "${pokemon_list[@]}"; do
 	echo "Fetching data for $name..."
 	curl -s "https://pokeapi.co/api/v2/pokemon/$name" > "pokemon_data/$name.json"
 	echo "Saved data to pokemon_data/$name.json ✅"
