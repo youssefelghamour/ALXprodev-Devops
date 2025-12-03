@@ -1,0 +1,24 @@
+#!/bin/bash
+# A script that uses advanced text manipulation tools (jq, awk, sed) to extract specific data from the API response in data.json
+
+# 1. Extract name, height, weight, type from the json data and store it in variables
+# js treats the input as json objects
+name=$(jq -r '.name' data.json)
+height=$(jq -r '.height' data.json)
+weight=$(jq -r '.weight' data.json)
+type=$(jq -r '.types[0].type.name' data.json)
+
+
+# 2. Use awk to to turn height from dm to meter and weight from hg to kg
+height=$(echo "$height" | awk '{print $1 / 10}')
+weight=$(echo "$weight" | awk '{print $1 / 10}')
+
+# 3. Use awk to capitalize the first letters of the name and type
+name=$(echo "$name" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
+type=$(echo "$type" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
+
+# 4. Create a template string
+template="NAME is of type TYPE, weighs WEIGHTkg, and is HEIGHTm tall."
+
+# 5. Use sed to replace the placeholders with the variables and print the output
+echo "$template" | sed "s/NAME/$name/" | sed "s/TYPE/$type/" | sed "s/WEIGHT/$weight/" | sed "s/HEIGHT/$height/"
