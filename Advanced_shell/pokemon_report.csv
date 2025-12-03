@@ -1,0 +1,11 @@
+CSV Report generated at: pokemon_report.csv
+
+Name,Height (m),Weight (kg)
+bulbasaur,0.7,6.9
+charmander,0.6,8.5
+charmeleon,1.1,19.0
+ivysaur,1.0,13.0
+venusaur,2.0,100.0
+
+Average Height: 1.08 m
+Average Weight: 29.48 kg

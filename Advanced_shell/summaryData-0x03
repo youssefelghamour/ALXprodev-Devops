@@ -1,0 +1,32 @@
+#!/bin/bash
+# A script that reads all the JSON files & extracts the name, height, and weight from each file
+
+# Add the header to the csv file
+echo "CSV Report generated at: pokemon_report.csv" > pokemon_report.csv
+echo "" >> pokemon_report.csv
+echo "Name,Height (m),Weight (kg)" >> pokemon_report.csv
+
+pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+# Sort the array alphabetically
+IFS=$'\n' sorted_list=($(sort <<<"${pokemon_list[*]}"))
+unset IFS
+
+for name in "${sorted_list[@]}"; do
+	p_name=$(jq -r '.name' "pokemon_data/$name.json")
+	height=$(jq -r '.height' "pokemon_data/$name.json" | awk '{printf "%.1f", $1/10}')
+	weight=$(jq -r '.weight' "pokemon_data/$name.json" | awk '{printf "%.1f", $1/10}')
+	
+	# Append the values to the csv file
+	echo "$p_name,$height,$weight" >> pokemon_report.csv
+done
+
+# Calculate the average weight and height from the data in the csv ignoring the first 3 lines (header)
+avg_height=$(awk -F, 'NR>3 {sum+=$2; count++} END {print sum/count}' pokemon_report.csv)
+avg_weight=$(awk -F, 'NR>3 {sum+=$3; count++} END {print sum/count}' pokemon_report.csv)
+
+echo "" >> pokemon_report.csv
+echo "Average Height: $avg_height m" >> pokemon_report.csv
+echo "Average Weight: $avg_weight kg" >> pokemon_report.csv
+
+cat pokemon_report.csv
