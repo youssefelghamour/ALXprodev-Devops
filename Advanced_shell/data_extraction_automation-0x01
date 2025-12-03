@@ -10,12 +10,12 @@ type=$(jq -r '.types[0].type.name' data.json)
 
 
 # 2. Use awk to to turn height from dm to meter and weight from hg to kg
-height=$(echo "$height" | awk '{print $1 / 10}')
-weight=$(echo "$weight" | awk '{print $1 / 10}')
+formatted_height=$(echo "$height" | awk '{print $1 / 10}')
+formatted_weight=$(echo "$weight" | awk '{print $1 / 10}')
 
 # 3. Use awk to capitalize the first letters of the name and type
 name=$(echo "$name" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
 type=$(echo "$type" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
 
 # 4. Print out the message
-echo "$name is of type $type, weighs ${weight}kg, and is ${height}m tall."
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
