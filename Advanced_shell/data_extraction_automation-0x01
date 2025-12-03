@@ -17,8 +17,5 @@ weight=$(echo "$weight" | awk '{print $1 / 10}')
 name=$(echo "$name" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
 type=$(echo "$type" | awk '{$1=toupper(substr($1,1,1)) substr($1,2); print $0}')
 
-# 4. Create a template string
-template="NAME is of type TYPE, weighs WEIGHTkg, and is HEIGHTm tall."
-
-# 5. Use sed to replace the placeholders with the variables and print the output
-echo "$template" | sed "s/NAME/$name/" | sed "s/TYPE/$type/" | sed "s/WEIGHT/$weight/" | sed "s/HEIGHT/$height/"
+# 4. Print out the message
+echo "$name is of type $type, weighs ${weight}kg, and is ${height}m tall."
